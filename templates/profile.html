@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <title>プロフィール登録</title>
+</head>
+<body>
+    <h1>プロフィールを登録しよう！</h1>
+    <form method="POST">
+        性別:
+        <select name="gender">
+            <option value="男性">男性</option>
+            <option value="女性">女性</option>
+        </select><br><br>
+        年齢: <input type="number" name="age"><br><br>
+        身長(cm): <input type="number" name="height"><br><br>
+        体重(kg): <input type="number" name="weight"><br><br>
+        <input type="submit" value="登録">
+    </form>
+</body>
+{% endblock %}

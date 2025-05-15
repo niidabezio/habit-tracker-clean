@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<head>
+    <meta charset="utf-8">
+    <title>過去の記録</title>
+</head>
+
+<body>
+    <h1>📜 過去の記録</h1>
+    <a href="/record">← 戻る</a>
+    <hr>
+
+    {% for record in records %}
+        <h2>{{ record.record_date.strftime('%Y-%m-%d') }}</h2>
+        <p>体重: {{ record.weight }} kg</p>
+        <p>総カロリー: {{ record.total_calorie or '未集計' }} kcal</p>
+        <p>総塩分: {{ record.total_salt or '未集計' }} g</p>
+
+        <ul>
+        {% for food in record.food_items %}
+            <li>{{ food.time.strftime('%H:%M') }} - {{ food.name }}（{{ food.calorie }} kcal / {{ food.salt }} g）</li>
+        {% endfor %}
+        </ul>
+        <hr>
+    {% endfor %}
+    <h2>📊 体重・カロリー・塩分の推移（過去30日）</h2>
+    <canvas id="trendChart" width="100%" height="40"></canvas>
+    
+    <!-- ✅ Chart.js 読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- ✅ グラフ描画のスクリプト -->
+    <script>
+      const labels = {{ labels|tojson }};
+      const weightData = {{ weight_data|tojson }};
+      const calorieData = {{ calorie_data|tojson }};
+      const saltData = {{ salt_data|tojson }};
+    
+      const ctx = document.getElementById('trendChart').getContext('2d');
+      const trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: '体重 (kg)',
+              data: weightData,
+              borderColor: 'blue',
+              fill: false
+            },
+            {
+              label: 'カロリー (kcal)',
+              data: calorieData,
+              borderColor: 'red',
+              fill: false
+            },
+            {
+              label: '塩分 (g)',
+              data: saltData,
+              borderColor: 'green',
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: '体重・カロリー・塩分の30日推移'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    </script>
+
+</body>
+{% endblock %}

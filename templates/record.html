@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h2>🕒 {{ today_date }} / {{ current_time }}</h2>
+
+    <h3>🍽 本日食べたもの</h3>
+      <table class="today-table">
+        <thead>
+          <tr>
+            <th>🕒 時間</th>
+            <th>🍴 食べ物</th>
+            <th>🔥 カロリー</th>
+            <th>🧂 塩分</th>
+            <th>💪 たんぱく質</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in today_items %}
+          <tr>
+            <td>{{ item.time.strftime('%H:%M') }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.calorie }} kcal</td>
+            <td>{{ item.salt }} g</td>
+            <td>{{ item.protein }} g</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="totals">
+        <p>🔥 合計カロリー: {{ total_calorie }} kcal</p>
+        <p>🧂 合計塩分: {{ total_salt }} g</p>
+        <p>💪 合計たんぱく質: {{ total_protein }} g</p>
+      </div>
+      
+
+    
+
+
+    <h3>🔥 本日摂取したカロリー: {{ total_calorie }} kcal</h3>
+    
+    <h3>🎯 目標カロリー: {{ goal_calorie }} kcal</h3>
+
+    <h3>💪 本日摂取したたんぱく質: {{ total_protein }} g</h3>
+
+    
+    <h2>🍔　よく食べるもの（直近20件）</h2>
+<ul>
+    {% for item in recent_items %}
+        <li>
+            {{ item.name }} ({{ item.calorie }}kcal / {{ item.salt }}g)
+            <form method="POST" style="display:inline;">
+                <input type="hidden" name="name" value="{{ item.name }}">
+                <input type="hidden" name="calorie" value="{{ item.calorie }}">
+                <input type="hidden" name="protein" value="{{ item.protein }}">  <!-- ← これ追加！ -->
+                <input type="hidden" name="salt" value="{{ item.salt }}">
+                <input type="hidden" name="time" value="{{ current_time }}">
+                <input type="submit" name="action" value="食" class="btn btn-eat">
+                
+            </form>
+            <form method="POST" action="/delete_food/{{ item.id }}" style="display:inline;">
+                <input type="submit" value="🗑️" class="btn btn-delete">
+            </form>
+            
+        </li>
+    {% endfor %}
+</ul>
+<h2>🧡 お気に入りの食べ物</h2>
+<ul>
+  {% for item in favorite_items %}
+    <li>
+      {{ item.name }} ({{ item.calorie }}kcal / {{ item.salt }}g)
+      <form method="POST" style="display:inline;">
+        <input type="hidden" name="name" value="{{ item.name }}">
+        <input type="hidden" name="calorie" value="{{ item.calorie }}">
+        <input type="hidden" name="salt" value="{{ item.salt }}">
+        <input type="hidden" name="time" value="{{ current_time }}">
+        <input type="submit" name="action" value="食" class="btn btn-eat">
+      </form>
+      <form method="POST" action="/delete_favorite/{{ item.id }}" style="display:inline;">
+        <input type="submit" value="🗑️" class="btn btn-delete">
+    </li>
+  {% endfor %}
+</ul>
+
+
+    <h2>🍽 食事の記録</h2>
+    <form method="POST">
+        食べたものの名前: <input type="text" name="name"><br>
+        カロリー (kcal): <input type="number" name="calorie"><br>
+        たんぱく質 (g): <input type="number" step="0.1" name="protein"><br>
+        塩分 (g): <input type="number" name="salt"><br>
+        食べた時間: <input type="time" name="time" value="{{ current_time }}"><br>
+
+        <input type="submit" name="action" value="食事を記録">
+        <input type="submit" name="action" value="お気に入りに追加">
+
+    </form>
+
+    <h2>⚖️ 体重の記録</h2>
+<form method="POST">
+    今日の体重 (kg): <input type="number" step="0.1" name="weight"><br>
+    <input type="submit" name="action" value="体重を記録">
+</form>
+
+    
+{% endblock %}
