@@ -109,7 +109,9 @@ def record():
         return redirect('/profile')  # 未登録ならプロフィールへ
 
     user = User.query.get(user_id)
-
+    if not user:
+        return redirect('/profile')  # ← DBに見つからないならやっぱりプロフィールへ
+    
     if request.method == 'POST':
         action = request.form.get('action')  # ← これなら「なかったら None」で止まらない！
         
