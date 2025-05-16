@@ -1,27 +1,17 @@
-from models import db, User, Record, FoodItem, FavoriteFood
 from flask import Flask, render_template, request, session, redirect
-from models import db, User  # ← 必要なモデルをインポート
-from datetime import datetime
-from models import db, User
 from datetime import datetime, timedelta
-from models import FoodItem, Record
-from models import FavoriteFood
-from flask import session
 
-
+from models import db, User, Record, FoodItem, FavoriteFood
 
 app = Flask(__name__)
-app.secret_key = '1234'  # セッションに必要（なんでもOK）
+app.secret_key = "your-secret-key"  # セッションで必要
 
-
-# PostgreSQLに接続する設定
+# データベースの設定（Render と ローカル対応）
 import os
-
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL',
-    'postgresql://postgres:niida0@localhost:5432/fresh_db'  # ←ここ！
+    'postgresql://postgres:niida0@localhost:5432/habit_db'  # ← ローカル用
 )
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # DB初期化
@@ -292,4 +282,7 @@ def history():
 
 # サーバー起動（開発モード）
 if __name__ == '__main__':
+    from models import db
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
