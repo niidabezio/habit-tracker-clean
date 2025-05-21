@@ -2,12 +2,12 @@ from flask import Flask, render_template, request, session, redirect
 from datetime import datetime, timedelta
 
 from models import db, User, Record, FoodItem, FavoriteFood
+import os
 
 app = Flask(__name__)
 app.secret_key = "your-secret-key"  # セッションで必要
 
 # データベースの設定（Render と ローカル対応）
-import os
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL',
     'postgresql://postgres:niida0@localhost:5432/habit_db'  # ← ローカル用
