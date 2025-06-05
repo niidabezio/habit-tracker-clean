@@ -44,7 +44,7 @@ def home():
 def profile():
 
     if not all([request.form['gender'], request.form['age'], request.form['height'], request.form['weight']]):
-    return "全ての項目を入力してください。", 400
+        return "全ての項目を入力してください。", 400
 
     if 'user_id' in session and request.method == 'GET':
         user = User.query.get(session['user_id'])
