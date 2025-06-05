@@ -43,8 +43,14 @@ def home():
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
 
-    if not all([request.form['gender'], request.form['age'], request.form['height'], request.form['weight']]):
-        return "全ての項目を入力してください。", 400
+    if request.method == 'POST':
+        if not all([
+            request.form.get('gender'),
+            request.form.get('age'),
+            request.form.get('height'),
+            request.form.get('weight')
+        ]):
+            return "全ての項目を入力してください。", 400
 
     if 'user_id' in session and request.method == 'GET':
         user = User.query.get(session['user_id'])
@@ -153,9 +159,10 @@ def record():
             food = FoodItem(name=name, calorie=calorie, protein=protein, salt=salt, time=time_obj, record_id=record.id)
             db.session.add(food)
             db.session.commit()
+            db.session.refresh(record)
 
             # FoodItemを追加した後にRecordの合計を更新
-            record.total_calorie = sum(f.calorie for f in record.food_items)
+            record.total_calorie = sum(f.calorie or 0 for f in record.food_items)
             record.total_salt = sum(f.salt or 0 for f in record.food_items)
             record.total_protein = sum(f.protein or 0 for f in record.food_items)  # ← モデルにあるなら！
 
@@ -226,6 +233,11 @@ def record():
     if record and record.food_items:
         total_protein = sum([f.protein or 0 for f in record.food_items])
 
+    total_salt = 0
+    if record and record.food_items:
+        total_salt = sum([f.salt or 0 for f in record.food_items])
+
+
     # 🎯 目標カロリー（体重ベースのざっくり計算）
     if user.gender == "男性":
         bmr = 10 * user.weight + 6.25 * user.height - 5 * user.age + 5
@@ -244,7 +256,7 @@ def record():
         current_time=now_time,
         today_date=today_date,
         total_calorie=total_calorie,
-        goal_calorie=goal_calorie
+        goal_calorie=goal_calorie,
         total_protein=total_protein,  # ← 追加
         total_salt=total_salt          
     )
