@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, session, redirect
+from sqlalchemy import func
 from datetime import datetime, timedelta
 
 from models import db, User, Record, FoodItem, FavoriteFood
@@ -106,7 +107,7 @@ def record():
     if not user_id:
         return redirect('/profile')  # 未登録ならプロフィールへ
 
-    user = User.query.get(user_id)
+    user = User.query.get(session.get('user_id'))
     if not user:
         return redirect('/profile')  # ← DBに見つからないならやっぱりプロフィールへ
     
@@ -152,6 +153,14 @@ def record():
             food = FoodItem(name=name, calorie=calorie, protein=protein, salt=salt, time=time_obj, record_id=record.id)
             db.session.add(food)
             db.session.commit()
+
+            # FoodItemを追加した後にRecordの合計を更新
+            record.total_calorie = sum(f.calorie for f in record.food_items)
+            record.total_salt = sum(f.salt or 0 for f in record.food_items)
+            record.total_protein = sum(f.protein or 0 for f in record.food_items)  # ← モデルにあるなら！
+
+            db.session.commit()
+
 
             return redirect('/record')
 
@@ -236,6 +245,8 @@ def record():
         today_date=today_date,
         total_calorie=total_calorie,
         goal_calorie=goal_calorie
+        total_protein=total_protein,  # ← 追加
+        total_salt=total_salt          
     )
 @app.route('/delete_food/<int:food_id>', methods=['POST'])
 def delete_food(food_id):
