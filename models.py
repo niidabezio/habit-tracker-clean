@@ -18,6 +18,7 @@ class Record(db.Model):
     weight = db.Column(db.Float)
     total_calorie = db.Column(db.Float)
     total_salt = db.Column(db.Float)
+    total_protein = db.Column(db.Float)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     food_items = db.relationship('FoodItem', backref='record', lazy=True)

@@ -218,24 +218,16 @@ def record():
     today_date = datetime.now().strftime('%Y年%m月%d日')
     now_time = datetime.now().strftime('%H:%M')
 
-    # 👤 仮のユーザー（ID=1）を取得
-    user = User.query.get(1)
+
 
     # 🔥 今日の記録とカロリー合計
     today = datetime.now().date()
-    record = Record.query.filter_by(record_date=today, user_id=user.id).first()
+    record = Record.query.filter_by(record_date=today, user_id=user_id).first()
 
-    total_calorie = 0
-    if record and record.food_items:
-        total_calorie = sum([f.calorie for f in record.food_items])
+    total_calorie = record.total_calorie if record else 0
+    total_protein = record.total_protein if record else 0
+    total_salt = record.total_salt if record else 0
 
-    total_protein = 0
-    if record and record.food_items:
-        total_protein = sum([f.protein or 0 for f in record.food_items])
-
-    total_salt = 0
-    if record and record.food_items:
-        total_salt = sum([f.salt or 0 for f in record.food_items])
 
 
     # 🎯 目標カロリー（体重ベースのざっくり計算）
