@@ -252,13 +252,7 @@ def record():
         total_protein=total_protein,  # ← 追加
         total_salt=total_salt          
     )
-@app.route('/delete_food/<int:food_id>', methods=['POST'])
-def delete_food(food_id):
-    food = FoodItem.query.get(food_id)
-    if food:
-        db.session.delete(food)
-        db.session.commit()
-    return redirect('/record')
+
 
 @app.route('/delete_favorite/<int:favorite_id>', methods=['POST'])
 def delete_favorite(favorite_id):
@@ -266,6 +260,26 @@ def delete_favorite(favorite_id):
     if favorite:
         db.session.delete(favorite)
         db.session.commit()
+    return redirect('/record')
+
+@app.route('/delete-food/<int:food_id>', methods=['POST'])
+def delete_food(food_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect('/profile')
+    
+    favorite = FavoriteItem.query.get(favorite_id)
+    if favorite and favorite.user_id == user_id:
+        db.session.delete(favorite)
+        db.session.commit()
+
+    return redirect('/record')
+    
+    food = FoodItem.query.get(food_id)
+    if food and food.record.user_id == user_id:
+        db.session.delete(food)
+        db.session.commit()
+    
     return redirect('/record')
 
 

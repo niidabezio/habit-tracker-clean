@@ -23,6 +23,12 @@
             <td>{{ item.calorie }} kcal</td>
             <td>{{ item.salt }} g</td>
             <td>{{ item.protein }} g</td>
+            <td>
+              <form action="/delete-food/{{ item.id }}" method="POST" style="display:inline;">
+                <button type="submit" onclick="return confirm('削除しますか？');" class="delete-button">🗑️</button>
+              </form>
+            </td>
+
           </tr>
           {% endfor %}
         </tbody>
