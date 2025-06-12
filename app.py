@@ -317,9 +317,9 @@ def history():
         salt_data=salt_data
     )
 
-# サーバー起動（開発モード）
+# app.py の一番下
+from models import db  # 忘れずに読み込んでるかも確認
+
 if __name__ == '__main__':
-    from models import db
     with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+        db.create_all()  # ローカル起動時にテーブル作成
